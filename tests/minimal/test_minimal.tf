@@ -14,33 +14,38 @@ terraform {
 module "main" {
   source = "../.."
 
-  name = "ABC"
+  name  = "LOCAL1"
+  realm = "local"
 }
 
-data "aci_rest" "fvTenant" {
-  dn = "uni/tn-ABC"
+data "aci_rest" "aaaLoginDomain" {
+  dn = "uni/userext/logindomain-${module.main.name}"
 
   depends_on = [module.main]
 }
 
-resource "test_assertions" "fvTenant" {
-  component = "fvTenant"
+resource "test_assertions" "aaaLoginDomain" {
+  component = "aaaLoginDomain"
 
   equal "name" {
     description = "name"
-    got         = data.aci_rest.fvTenant.content.name
-    want        = "ABC"
+    got         = data.aci_rest.aaaLoginDomain.content.name
+    want        = module.main.name
   }
+}
 
-  equal "nameAlias" {
-    description = "nameAlias"
-    got         = data.aci_rest.fvTenant.content.nameAlias
-    want        = ""
-  }
+data "aci_rest" "aaaDomainAuth" {
+  dn = "${data.aci_rest.aaaLoginDomain.id}/domainauth"
 
-  equal "descr" {
-    description = "descr"
-    got         = data.aci_rest.fvTenant.content.descr
-    want        = ""
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "aaaDomainAuth" {
+  component = "aaaDomainAuth"
+
+  equal "realm" {
+    description = "realm"
+    got         = data.aci_rest.aaaDomainAuth.content.realm
+    want        = "local"
   }
 }

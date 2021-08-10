@@ -1,7 +1,11 @@
-module "aci_scaffolding" {
-  source = "netascode/scaffolding/aci"
+module "aci_login_domain" {
+  source = "netascode/login-domain/aci"
 
-  name        = "ABC"
-  alias       = "ABC-ALIAS"
+  name        = "TACACS1"
   description = "My Description"
+  realm       = "tacacs"
+  tacacs_providers = [{
+    hostname_ip = "10.1.1.10"
+    priority    = 10
+  }]
 }

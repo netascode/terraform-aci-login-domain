@@ -1,22 +1,26 @@
 <!-- BEGIN_TF_DOCS -->
-[![Tests](https://github.com/netascode/terraform-aci-scaffolding/actions/workflows/test.yml/badge.svg)](https://github.com/netascode/terraform-aci-scaffolding/actions/workflows/test.yml)
+[![Tests](https://github.com/netascode/terraform-aci-login-domain/actions/workflows/test.yml/badge.svg)](https://github.com/netascode/terraform-aci-login-domain/actions/workflows/test.yml)
 
-# Terraform ACI Scaffolding Module
+# Terraform ACI Login Domain Module
 
-Description
+Manages ACI Login Domain
 
 Location in GUI:
-`Tenants` » `XXX`
+`Admin` » `AAA` » `Authentication` » `AAA`
 
 ## Examples
 
 ```hcl
-module "aci_scaffolding" {
-  source = "netascode/scaffolding/aci"
+module "aci_login_domain" {
+  source = "netascode/login-domain/aci"
 
-  name        = "ABC"
-  alias       = "ABC-ALIAS"
+  name        = "TACACS1"
   description = "My Description"
+  realm       = "tacacs"
+  tacacs_providers = [{
+    hostname_ip = "10.1.1.10"
+    priority    = 10
+  }]
 }
 
 ```
@@ -38,20 +42,24 @@ module "aci_scaffolding" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_name"></a> [name](#input\_name) | Tenant name. | `string` | n/a | yes |
-| <a name="input_alias"></a> [alias](#input\_alias) | Tenant alias. | `string` | `""` | no |
-| <a name="input_description"></a> [description](#input\_description) | Tenant description. | `string` | `""` | no |
+| <a name="input_name"></a> [name](#input\_name) | Login domain name. | `string` | n/a | yes |
+| <a name="input_description"></a> [description](#input\_description) | Description. | `string` | `""` | no |
+| <a name="input_realm"></a> [realm](#input\_realm) | Realm. Choices: `local`, `tacacs`. | `string` | n/a | yes |
+| <a name="input_tacacs_providers"></a> [tacacs\_providers](#input\_tacacs\_providers) | List of TACACS providers. Allowed values `priority`: 0-16. Default value `priority`: .0 | <pre>list(object({<br>    hostname_ip = string<br>    priority    = optional(number)<br>  }))</pre> | `[]` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| <a name="output_dn"></a> [dn](#output\_dn) | Distinguished name of `fvTenant` object. |
-| <a name="output_name"></a> [name](#output\_name) | Tenant name. |
+| <a name="output_dn"></a> [dn](#output\_dn) | Distinguished name of `aaaLoginDomain` object. |
+| <a name="output_name"></a> [name](#output\_name) | Login domain name. |
 
 ## Resources
 
 | Name | Type |
 |------|------|
-| [aci_rest.fvTenant](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
+| [aci_rest.aaaDomainAuth](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
+| [aci_rest.aaaLoginDomain](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
+| [aci_rest.aaaProviderRef](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
+| [aci_rest.aaaTacacsPlusProviderGroup](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
 <!-- END_TF_DOCS -->
