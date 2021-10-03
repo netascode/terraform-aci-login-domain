@@ -13,7 +13,8 @@ Note that this example will create resources. Resources can be destroyed with `t
 
 ```hcl
 module "aci_login_domain" {
-  source = "netascode/login-domain/aci"
+  source  = "netascode/login-domain/aci"
+  version = ">= 0.0.1"
 
   name        = "TACACS1"
   description = "My Description"
