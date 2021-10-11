@@ -8,7 +8,7 @@ resource "aci_rest" "aaaLoginDomain" {
 }
 
 resource "aci_rest" "aaaDomainAuth" {
-  dn         = "${aci_rest.aaaLoginDomain.id}/domainauth"
+  dn         = "${aci_rest.aaaLoginDomain.dn}/domainauth"
   class_name = "aaaDomainAuth"
   content = {
     realm         = var.realm
@@ -27,7 +27,7 @@ resource "aci_rest" "aaaTacacsPlusProviderGroup" {
 
 resource "aci_rest" "aaaProviderRef" {
   for_each   = { for prov in var.tacacs_providers : prov.hostname_ip => prov if var.realm == "tacacs" }
-  dn         = "${aci_rest.aaaTacacsPlusProviderGroup[0].id}/providerref-${each.value.hostname_ip}"
+  dn         = "${aci_rest.aaaTacacsPlusProviderGroup[0].dn}/providerref-${each.value.hostname_ip}"
   class_name = "aaaProviderRef"
   content = {
     name  = each.value.hostname_ip
