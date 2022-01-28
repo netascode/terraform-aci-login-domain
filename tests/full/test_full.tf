@@ -5,8 +5,8 @@ terraform {
     }
 
     aci = {
-      source  = "netascode/aci"
-      version = ">=0.2.0"
+      source  = "CiscoDevNet/aci"
+      version = ">=2.0.0"
     }
   }
 }
@@ -23,7 +23,7 @@ module "main" {
   }]
 }
 
-data "aci_rest" "aaaLoginDomain" {
+data "aci_rest_managed" "aaaLoginDomain" {
   dn = "uni/userext/logindomain-${module.main.name}"
 
   depends_on = [module.main]
@@ -34,19 +34,19 @@ resource "test_assertions" "aaaLoginDomain" {
 
   equal "name" {
     description = "name"
-    got         = data.aci_rest.aaaLoginDomain.content.name
+    got         = data.aci_rest_managed.aaaLoginDomain.content.name
     want        = module.main.name
   }
 
   equal "descr" {
     description = "descr"
-    got         = data.aci_rest.aaaLoginDomain.content.descr
+    got         = data.aci_rest_managed.aaaLoginDomain.content.descr
     want        = "My Description"
   }
 }
 
-data "aci_rest" "aaaDomainAuth" {
-  dn = "${data.aci_rest.aaaLoginDomain.id}/domainauth"
+data "aci_rest_managed" "aaaDomainAuth" {
+  dn = "${data.aci_rest_managed.aaaLoginDomain.id}/domainauth"
 
   depends_on = [module.main]
 }
@@ -56,18 +56,18 @@ resource "test_assertions" "aaaDomainAuth" {
 
   equal "realm" {
     description = "realm"
-    got         = data.aci_rest.aaaDomainAuth.content.realm
+    got         = data.aci_rest_managed.aaaDomainAuth.content.realm
     want        = "tacacs"
   }
 
   equal "providerGroup" {
     description = "providerGroup"
-    got         = data.aci_rest.aaaDomainAuth.content.providerGroup
+    got         = data.aci_rest_managed.aaaDomainAuth.content.providerGroup
     want        = module.main.name
   }
 }
 
-data "aci_rest" "aaaTacacsPlusProviderGroup" {
+data "aci_rest_managed" "aaaTacacsPlusProviderGroup" {
   dn = "uni/userext/tacacsext/tacacsplusprovidergroup-${module.main.name}"
 
   depends_on = [module.main]
@@ -78,13 +78,13 @@ resource "test_assertions" "aaaTacacsPlusProviderGroup" {
 
   equal "name" {
     description = "name"
-    got         = data.aci_rest.aaaTacacsPlusProviderGroup.content.name
+    got         = data.aci_rest_managed.aaaTacacsPlusProviderGroup.content.name
     want        = module.main.name
   }
 }
 
-data "aci_rest" "aaaProviderRef" {
-  dn = "${data.aci_rest.aaaTacacsPlusProviderGroup.id}/providerref-10.1.1.10"
+data "aci_rest_managed" "aaaProviderRef" {
+  dn = "${data.aci_rest_managed.aaaTacacsPlusProviderGroup.id}/providerref-10.1.1.10"
 
   depends_on = [module.main]
 }
@@ -94,13 +94,13 @@ resource "test_assertions" "aaaProviderRef" {
 
   equal "name" {
     description = "name"
-    got         = data.aci_rest.aaaProviderRef.content.name
+    got         = data.aci_rest_managed.aaaProviderRef.content.name
     want        = "10.1.1.10"
   }
 
   equal "order" {
     description = "order"
-    got         = data.aci_rest.aaaProviderRef.content.order
+    got         = data.aci_rest_managed.aaaProviderRef.content.order
     want        = "10"
   }
 }

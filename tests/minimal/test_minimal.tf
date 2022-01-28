@@ -5,8 +5,8 @@ terraform {
     }
 
     aci = {
-      source  = "netascode/aci"
-      version = ">=0.2.0"
+      source  = "CiscoDevNet/aci"
+      version = ">=2.0.0"
     }
   }
 }
@@ -18,7 +18,7 @@ module "main" {
   realm = "local"
 }
 
-data "aci_rest" "aaaLoginDomain" {
+data "aci_rest_managed" "aaaLoginDomain" {
   dn = "uni/userext/logindomain-${module.main.name}"
 
   depends_on = [module.main]
@@ -29,13 +29,13 @@ resource "test_assertions" "aaaLoginDomain" {
 
   equal "name" {
     description = "name"
-    got         = data.aci_rest.aaaLoginDomain.content.name
+    got         = data.aci_rest_managed.aaaLoginDomain.content.name
     want        = module.main.name
   }
 }
 
-data "aci_rest" "aaaDomainAuth" {
-  dn = "${data.aci_rest.aaaLoginDomain.id}/domainauth"
+data "aci_rest_managed" "aaaDomainAuth" {
+  dn = "${data.aci_rest_managed.aaaLoginDomain.id}/domainauth"
 
   depends_on = [module.main]
 }
@@ -45,7 +45,7 @@ resource "test_assertions" "aaaDomainAuth" {
 
   equal "realm" {
     description = "realm"
-    got         = data.aci_rest.aaaDomainAuth.content.realm
+    got         = data.aci_rest_managed.aaaDomainAuth.content.realm
     want        = "local"
   }
 }
