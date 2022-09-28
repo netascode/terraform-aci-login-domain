@@ -13,7 +13,7 @@ Location in GUI:
 ```hcl
 module "aci_login_domain" {
   source  = "netascode/login-domain/aci"
-  version = ">= 0.1.0"
+  version = ">= 0.2.0"
 
   name        = "TACACS1"
   description = "My Description"
@@ -29,7 +29,7 @@ module "aci_login_domain" {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.0 |
 | <a name="requirement_aci"></a> [aci](#requirement\_aci) | >= 2.0.0 |
 
 ## Providers
@@ -45,7 +45,7 @@ module "aci_login_domain" {
 | <a name="input_name"></a> [name](#input\_name) | Login domain name. | `string` | n/a | yes |
 | <a name="input_description"></a> [description](#input\_description) | Description. | `string` | `""` | no |
 | <a name="input_realm"></a> [realm](#input\_realm) | Realm. Choices: `local`, `tacacs`. | `string` | n/a | yes |
-| <a name="input_tacacs_providers"></a> [tacacs\_providers](#input\_tacacs\_providers) | List of TACACS providers. Allowed values `priority`: 0-16. Default value `priority`: .0 | <pre>list(object({<br>    hostname_ip = string<br>    priority    = optional(number)<br>  }))</pre> | `[]` | no |
+| <a name="input_tacacs_providers"></a> [tacacs\_providers](#input\_tacacs\_providers) | List of TACACS providers. Allowed values `priority`: 0-16. Default value `priority`: 0 | <pre>list(object({<br>    hostname_ip = string<br>    priority    = optional(number, 0)<br>  }))</pre> | `[]` | no |
 
 ## Outputs
 

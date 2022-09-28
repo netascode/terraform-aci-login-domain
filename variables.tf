@@ -30,10 +30,10 @@ variable "realm" {
 }
 
 variable "tacacs_providers" {
-  description = "List of TACACS providers. Allowed values `priority`: 0-16. Default value `priority`: .0"
+  description = "List of TACACS providers. Allowed values `priority`: 0-16. Default value `priority`: 0"
   type = list(object({
     hostname_ip = string
-    priority    = optional(number)
+    priority    = optional(number, 0)
   }))
   default = []
 
