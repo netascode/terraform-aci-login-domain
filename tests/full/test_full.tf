@@ -16,10 +16,12 @@ terraform {
 module "main" {
   source = "../.."
 
-  name        = "LOCAL1"
-  description = "My Description"
-  realm       = "tacacs"
-  tacacs_providers = [{
+  name           = "LDAP1"
+  description    = "My Description"
+  realm          = "ldap"
+  auth_choice    = "LdapGroupMap"
+  ldap_group_map = "GM1"
+  ldap_providers = [{
     hostname_ip = "10.1.1.10"
     priority    = 10
   }]
@@ -59,7 +61,7 @@ resource "test_assertions" "aaaDomainAuth" {
   equal "realm" {
     description = "realm"
     got         = data.aci_rest_managed.aaaDomainAuth.content.realm
-    want        = "tacacs"
+    want        = "ldap"
   }
 
   equal "providerGroup" {
@@ -69,24 +71,36 @@ resource "test_assertions" "aaaDomainAuth" {
   }
 }
 
-data "aci_rest_managed" "aaaTacacsPlusProviderGroup" {
-  dn = "uni/userext/tacacsext/tacacsplusprovidergroup-${module.main.name}"
+data "aci_rest_managed" "aaaLdapProviderGroup" {
+  dn = "uni/userext/ldapext/ldapprovidergroup-${module.main.name}"
 
   depends_on = [module.main]
 }
 
-resource "test_assertions" "aaaTacacsPlusProviderGroup" {
-  component = "aaaTacacsPlusProviderGroup"
+resource "test_assertions" "aaaLdapProviderGroup" {
+  component = "aaaLdapProviderGroup"
 
   equal "name" {
     description = "name"
-    got         = data.aci_rest_managed.aaaTacacsPlusProviderGroup.content.name
+    got         = data.aci_rest_managed.aaaLdapProviderGroup.content.name
     want        = module.main.name
+  }
+
+  equal "authChoice" {
+    description = "namauthChoicee"
+    got         = data.aci_rest_managed.aaaLdapProviderGroup.content.authChoice
+    want        = "LdapGroupMap"
+  }
+
+  equal "ldapGroupMapRef" {
+    description = "ldapGroupMapRef"
+    got         = data.aci_rest_managed.aaaLdapProviderGroup.content.ldapGroupMapRef
+    want        = "GM1"
   }
 }
 
 data "aci_rest_managed" "aaaProviderRef" {
-  dn = "${data.aci_rest_managed.aaaTacacsPlusProviderGroup.id}/providerref-10.1.1.10"
+  dn = "${data.aci_rest_managed.aaaLdapProviderGroup.id}/providerref-10.1.1.10"
 
   depends_on = [module.main]
 }

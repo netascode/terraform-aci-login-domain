@@ -12,7 +12,7 @@ resource "aci_rest_managed" "aaaDomainAuth" {
   class_name = "aaaDomainAuth"
   content = {
     realm         = var.realm
-    providerGroup = var.realm == "tacacs" ? var.name : null
+    providerGroup = contains(["tacacs", "ldap"], var.realm) ? var.name : null
   }
 }
 
@@ -28,6 +28,27 @@ resource "aci_rest_managed" "aaaTacacsPlusProviderGroup" {
 resource "aci_rest_managed" "aaaProviderRef" {
   for_each   = { for prov in var.tacacs_providers : prov.hostname_ip => prov if var.realm == "tacacs" }
   dn         = "${aci_rest_managed.aaaTacacsPlusProviderGroup[0].dn}/providerref-${each.value.hostname_ip}"
+  class_name = "aaaProviderRef"
+  content = {
+    name  = each.value.hostname_ip
+    order = each.value.priority
+  }
+}
+
+resource "aci_rest_managed" "aaaLdapProviderGroup" {
+  count      = var.realm == "ldap" ? 1 : 0
+  dn         = "uni/userext/ldapext/ldapprovidergroup-${var.name}"
+  class_name = "aaaLdapProviderGroup"
+  content = {
+    name            = var.name
+    authChoice      = var.auth_choice
+    ldapGroupMapRef = var.ldap_group_map != "" ? var.ldap_group_map : null
+  }
+}
+
+resource "aci_rest_managed" "aaaProviderRef_ldap" {
+  for_each   = { for prov in var.ldap_providers : prov.hostname_ip => prov if var.realm == "ldap" }
+  dn         = "${aci_rest_managed.aaaLdapProviderGroup[0].dn}/providerref-${each.value.hostname_ip}"
   class_name = "aaaProviderRef"
   content = {
     name  = each.value.hostname_ip
